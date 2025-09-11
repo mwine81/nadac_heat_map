@@ -36,15 +36,16 @@ def update_map(bg_value, date_value, utilization_value, metric_value, drug_value
     Input('state-select', 'value'),
     Input('utilization-select', 'value'),
     Input('drug-select', 'value'),
+    Input('date-select', 'value'),
 )
-def update_line_chart(bg_value, state_value, utilization_value, drug_value):
+def update_line_chart(bg_value, state_value, utilization_value, drug_value, date_value):
     filtered_data = filter_line_data(
         state=state_value,
         drug=drug_value,
         brand_generic=bg_value,
         utilization_type=utilization_value
     )
-    fig = create_line_chart(filtered_data)
+    fig = create_line_chart(filtered_data, selected_year_quarter=date_value)
     return fig
 
 # Help modal callbacks

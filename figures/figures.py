@@ -136,11 +136,12 @@ def create_heat_map(data: pl.LazyFrame, metric: str) -> go.Figure:
     return fig
 
 
-def create_line_chart(data) -> go.Figure:
+def create_line_chart(data, selected_year_quarter: str | None = None) -> go.Figure:
     """Create a polished time series comparing payment_per_unit and weighted_nadac_per_unit.
 
     - data: a pandas DataFrame (from Polars .collect()) with columns `date`,
       `payment_per_unit`, and `weighted_nadac_per_unit`.
+    - selected_year_quarter: optional year_quarter string to highlight specific period
     """
     data = data.collect(engine='streaming').to_pandas()
     y_cols = ['payment_per_unit', 'weighted_nadac_per_unit']
@@ -273,33 +274,68 @@ def create_line_chart(data) -> go.Figure:
         )
     )
 
-    # Add annotations for latest values (similar to heat map top/bottom annotations)
+    # Add annotations for selected period or latest values
     if len(data) > 0:
-        latest_date = data['date'].max()
-        latest_data = data[data['date'] == latest_date]
+        # Convert selected year_quarter to date for annotation
+        if selected_year_quarter:
+            try:
+                # Parse year_quarter format like "2023 Q1" -> find matching date
+                year, quarter = selected_year_quarter.split(' Q')
+                year = int(year)
+                quarter = int(quarter)
+                
+                # Create target date for the quarter (using first month of quarter)
+                quarter_month_map = {1: 1, 2: 4, 3: 7, 4: 10}
+                target_month = quarter_month_map.get(quarter, 1)
+                target_date = pd.Timestamp(year=year, month=target_month, day=1)
+                
+                # Find the closest date in the data to the target
+                data['date_diff'] = abs(data['date'] - target_date)
+                selected_data = data.loc[data['date_diff'].idxmin()]
+                annotation_date = selected_data['date']
+                
+                # Clean up temporary column
+                data = data.drop('date_diff', axis=1)
+                
+            except (ValueError, KeyError):
+                # Fallback to latest date if parsing fails
+                annotation_date = data['date'].max()
+                selected_data = data[data['date'] == annotation_date].iloc[0]
+        else:
+            # Use latest date if no year_quarter selected
+            annotation_date = data['date'].max()
+            selected_data = data[data['date'] == annotation_date].iloc[0]
         
         # Define colors for annotations
         annotation_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
         
-        if not latest_data.empty:
-            for i, col in enumerate(y_cols):
-                if col in latest_data.columns:
-                    latest_value = latest_data[col].iloc[0]
-                    if not pd.isna(latest_value):
-                        color = annotation_colors[i % len(annotation_colors)]
-                        fig.add_annotation(
-                            x=latest_date,
-                            y=latest_value,
-                            text=f"${latest_value:,.2f}",
-                            showarrow=True,
-                            arrowhead=2,
-                            arrowsize=1,
-                            arrowwidth=1,
-                            arrowcolor=color,
-                            bgcolor='rgba(255,255,255,0.8)',
-                            bordercolor=color,
-                            borderwidth=1,
-                            font=dict(size=10)
-                        )
+        for i, col in enumerate(y_cols):
+            if col in data.columns:
+                annotation_value = selected_data[col] if hasattr(selected_data, col) else selected_data.get(col)
+                if annotation_value is not None and not pd.isna(annotation_value):
+                    color = annotation_colors[i % len(annotation_colors)]
+                    
+                    # Add annotation text with period info
+                    if selected_year_quarter:
+                        annotation_text = f"{selected_year_quarter}<br>${annotation_value:,.2f}"
+                    else:
+                        annotation_text = f"Latest<br>${annotation_value:,.2f}"
+                    
+                    fig.add_annotation(
+                        x=annotation_date,
+                        y=annotation_value,
+                        text=annotation_text,
+                        showarrow=True,
+                        arrowhead=2,
+                        arrowsize=1,
+                        arrowwidth=2,
+                        arrowcolor=color,
+                        bgcolor='rgba(255,255,255,0.9)',
+                        bordercolor=color,
+                        borderwidth=2,
+                        font=dict(size=10, color=color),
+                        ax=20,
+                        ay=-30
+                    )
 
     return fig
