@@ -2,6 +2,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from typing import Any
 import polars as pl
+import pandas as pd
 
 def _friendly_label(metric: str) -> str:
     """Turn snake_case metric into a human-friendly title."""
@@ -145,13 +146,26 @@ def create_line_chart(data) -> go.Figure:
     y_cols = ['payment_per_unit', 'weighted_nadac_per_unit']
     labels = {c: _friendly_label(c) for c in y_cols}
 
+    # Additional hover data columns if available
+    hover_columns = ['units', 'rx_ct', 'total_amt', 'weighted_nadac_total', 'markup_per_unit']
+    hover_data = {}
+    for col in hover_columns:
+        if col in data.columns:
+            if col in ['units', 'rx_ct']:
+                hover_data[col] = ':,'  # Integer formatting with commas
+            elif col in ['total_amt', 'weighted_nadac_total']:
+                hover_data[col] = ':$,.0f'  # Currency with no decimals
+            else:
+                hover_data[col] = ':$,.2f'  # Currency with 2 decimals
+
     fig = px.line(
         data,
         x='date',
         y=y_cols,
         markers=True,
         labels={**labels, 'date': 'Date'},
-        color_discrete_sequence=px.colors.qualitative.Dark2,
+        color_discrete_sequence=px.colors.qualitative.Set2,  # Professional color palette
+        hover_data=hover_data,
     )
 
     # Ensure legend uses friendly labels (px may keep original column names as trace names)
@@ -162,24 +176,130 @@ def create_line_chart(data) -> go.Figure:
             t: Any = trace
             t.update(name=friendly, legendgroup=friendly)
 
-    # General layout
+    # Create comprehensive hover template similar to heat map
+    hover_template = "<b>%{x|%b %Y}</b><br>"
+    hover_template += "<b>%{fullData.name}: %{y:$,.2f}</b><br><br>"
+    
+    # Add additional data if available
+    if 'units' in data.columns:
+        hover_template += "Units: %{customdata[0]:,}<br>"
+    if 'rx_ct' in data.columns:
+        hover_template += "Prescriptions: %{customdata[1]:,}<br>"
+    if 'total_amt' in data.columns:
+        hover_template += "Total Amount: %{customdata[2]:$,.0f}<br>"
+    if 'weighted_nadac_total' in data.columns:
+        hover_template += "Weighted NADAC Total: %{customdata[3]:$,.0f}<br>"
+    if 'markup_per_unit' in data.columns:
+        hover_template += "Markup/Unit: %{customdata[4]:$,.2f}<br>"
+    
+    hover_template += "<extra></extra>"
+
+    # Prepare custom data array for hover template
+    customdata_cols = []
+    for col in hover_columns:
+        if col in data.columns:
+            customdata_cols.append(data[col])
+
+    # General layout with professional styling
     fig.update_layout(
         template='plotly_white',
-        margin=dict(l=40, r=20, t=50, b=40),
-        title_text='Payment per unit and Weighted NADAC over time',
-        title_x=0.5,
+        margin=dict(l=50, r=20, t=70, b=50),
+        # title_text='Drug Pricing Trends Over Time',
+        # title_x=0.5,
+        # title_font_size=16,
         hovermode='x unified',
-        legend=dict(orientation='h', yanchor='bottom', y=.97, xanchor='center', x=0.5),
+        legend=dict(
+            orientation='h', 
+            yanchor='bottom', 
+            y=1.02, 
+            xanchor='center', 
+            x=0.5,
+            bgcolor='rgba(255,255,255,0.8)',
+            bordercolor='LightGray',
+            borderwidth=1
+        ),
+        plot_bgcolor='white',
+        paper_bgcolor='white',
     )
 
-    # Trace styling and hover formatting
-    fig.update_traces(marker=dict(size=6), line=dict(width=2), hovertemplate='%{x|%b %Y}<br>%{fullData.name}: %{y:$,.2f}<extra></extra>')
+    # Enhanced trace styling and hover formatting
+    fig.update_traces(
+        marker=dict(size=8, line=dict(width=1, color='white')), 
+        line=dict(width=3),
+        hovertemplate=hover_template,
+        customdata=list(zip(*customdata_cols)) if customdata_cols else None,
+    )
 
-    # Axis formatting
-    fig.update_xaxes(showgrid=False, tickformat='%b %Y', ticks='outside')
-    fig.update_yaxes(showgrid=True, gridcolor='LightGray', zeroline=False, tickformat='$,.2f', ticks='outside')
+    # Professional axis formatting matching heat map style
+    fig.update_xaxes(
+        showgrid=True,
+        gridcolor='rgba(128,128,128,0.2)',
+        gridwidth=1,
+        tickformat='%b %Y', 
+        ticks='outside',
+        tickfont_size=12,
+        title_font_size=14,
+        linecolor='LightGray',
+        mirror=True
+    )
+    
+    fig.update_yaxes(
+        showgrid=True, 
+        gridcolor='rgba(128,128,128,0.2)',
+        gridwidth=1,
+        zeroline=True,
+        zerolinecolor='rgba(128,128,128,0.4)',
+        zerolinewidth=1,
+        tickformat='$,.2f', 
+        ticks='outside',
+        tickfont_size=12,
+        title_font_size=14,
+        title_text='Price per Unit (USD)',
+        linecolor='LightGray',
+        mirror=True
+    )
 
-    # Add a range slider for exploration
-    fig.update_layout(xaxis=dict(rangeslider=dict(visible=True), type='date'))
+    # Add range slider for exploration (consistent with professional dashboards)
+    fig.update_layout(
+        xaxis=dict(
+            rangeslider=dict(
+                visible=True,
+                thickness=0.05,
+                bgcolor='rgba(128,128,128,0.1)',
+                bordercolor='LightGray',
+                borderwidth=1
+            ), 
+            type='date'
+        )
+    )
+
+    # Add annotations for latest values (similar to heat map top/bottom annotations)
+    if len(data) > 0:
+        latest_date = data['date'].max()
+        latest_data = data[data['date'] == latest_date]
+        
+        # Define colors for annotations
+        annotation_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
+        
+        if not latest_data.empty:
+            for i, col in enumerate(y_cols):
+                if col in latest_data.columns:
+                    latest_value = latest_data[col].iloc[0]
+                    if not pd.isna(latest_value):
+                        color = annotation_colors[i % len(annotation_colors)]
+                        fig.add_annotation(
+                            x=latest_date,
+                            y=latest_value,
+                            text=f"${latest_value:,.2f}",
+                            showarrow=True,
+                            arrowhead=2,
+                            arrowsize=1,
+                            arrowwidth=1,
+                            arrowcolor=color,
+                            bgcolor='rgba(255,255,255,0.8)',
+                            bordercolor=color,
+                            borderwidth=1,
+                            font=dict(size=10)
+                        )
 
     return fig
