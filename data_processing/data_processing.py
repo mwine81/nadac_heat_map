@@ -80,7 +80,7 @@ def filter_map_data(year_quarter: str,drug: str | None, brand_generic: str | Non
         data = data.filter(c.is_brand if brand_generic == 'Brand' else ~c.is_brand)
     
     if utilization_type is not None:
-        data = data.filter(c.is_ffsu if utilization_type == 'ffsu' else ~c.is_ffsu)
+        data = data.filter(c.is_ffsu if utilization_type == 'Fee-for-Service' else ~c.is_ffsu)
 
     data = (
         data

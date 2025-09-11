@@ -9,14 +9,13 @@ from ui.help import help_section
 
 layout = dmc.Container(
     [
-    header(HEADER_TITLE, [badge_nadac(), badge_sdud()]),
-    help_section(),
-    controls(),
-    chart(title = 'US - States' ,id = 'map'),
-    chart(title= "NADAC to Pay Per Unit", id='line-chart'),
-    footer(HEADER_TITLE, [badge_nadac(), badge_sdud(), badge_analytics()]),
+        header(HEADER_TITLE, [badge_nadac(), badge_sdud()]),
+        help_section(),
+        controls(),
+        chart(title="U.S. State Heat Map — Payment per Unit vs NADAC", id="map"),
+        chart(title="NADAC vs SDUD — Unit Price and Payment per Unit (Time Series)", id="line-chart"),
+        footer(HEADER_TITLE, [badge_nadac(), badge_sdud(), badge_analytics()]),
     ],
-    maw='1000px'
-
+    maw="1000px"
 )
     

@@ -14,11 +14,11 @@ def controls():
                     children=[
                         dmc.Select(
                             label="Brand/Generic",
-                            data=['brand', 'generic'],
+                            data=['Brand', 'Generic'],
                             clearable=True,
                             searchable=True,
                             radius="md",
-                            placeholder="Select brand/generic...",
+                            placeholder="Select Brand/Generic...",
                             id="bg-select",
                         ),
                     ]
@@ -43,7 +43,7 @@ def controls():
                     children=[
                         dmc.Select(
                             label="Utilization Type",
-                            data=['ffsu','mcou'],
+                            data=['Fee-for-Service','Managed Care'],
                             searchable=True,
                             radius="md",
                             placeholder="Select utilization type...",
