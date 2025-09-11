@@ -45,17 +45,18 @@ def help_section():
             children=[
                 dmc.Stack([
                     dmc.Text([
-                        "This dashboard provides comprehensive analysis of NADAC (National Average Drug Acquisition Cost) pricing data. ",
-                        "It allows you to explore drug pricing trends across different categories, products, and package sizes."
+                        "This heat map dashboard visualizes NADAC (National Average Drug Acquisition Cost) pricing data across US states. ",
+                        "Explore drug pricing patterns geographically and track price trends over time for specific states and drugs."
                     ], size="sm"),
                     dmc.List([
-                        dmc.ListItem("View price trends over time for specific drug products"),
-                        dmc.ListItem("Compare prices across different package sizes"),
-                        dmc.ListItem("Filter by drug class and specific products"),
-                        dmc.ListItem("Interactive charts with detailed legends")
+                        dmc.ListItem("View state-by-state drug pricing with interactive heat map"),
+                        dmc.ListItem("Compare payment per unit vs weighted NADAC over time"),
+                        dmc.ListItem("Filter by drug, brand/generic, and utilization type"),
+                        dmc.ListItem("Switch between percentile and absolute color scaling"),
+                        dmc.ListItem("Hover for detailed state-specific pricing information")
                     ], size="sm"),
                     dmc.Alert([
-                        dmc.Text("The data reflects average acquisition costs and may not represent actual retail prices.", size="sm")
+                        dmc.Text("Colors represent relative pricing - use the colorbar to interpret values across states.", size="sm")
                     ], title="Important Note", color="blue", variant="light")
                 ], gap="md")
             ]
@@ -68,20 +69,21 @@ def help_section():
             children=[
                 dmc.Stack([
                     dmc.Text([
-                        "The National Average Drug Acquisition Cost (NADAC) data is sourced from CMS (Centers for Medicare & Medicaid Services). ",
-                        "This data represents the national average of invoice prices paid by retail community pharmacies."
+                        "The NADAC (National Average Drug Acquisition Cost) data comes from CMS and represents average prices paid by retail pharmacies. ",
+                        "This heat map application processes the data using Polars for efficient filtering and aggregation."
                     ], size="sm"),
                     dmc.Divider(),
                     dmc.Title("Data Processing", order=4, size="md"),
                     dmc.List([
-                        dmc.ListItem("Prices are grouped by product and effective date"),
-                        dmc.ListItem("Unit prices are averaged across all reporting pharmacies"),
-                        dmc.ListItem("Data is filtered by drug classification and package size"),
-                        dmc.ListItem("Historical trends show price evolution over time")
+                        dmc.ListItem("Payment per unit calculated from total payment and units dispensed"),
+                        dmc.ListItem("Weighted NADAC computed using prescription volumes"),
+                        dmc.ListItem("State-level aggregations for geographic visualization"),
+                        dmc.ListItem("Time series data grouped by quarter and converted to monthly display"),
+                        dmc.ListItem("Lazy evaluation with Polars for performance on large datasets")
                     ], size="sm"),
                     dmc.Alert([
-                        dmc.Text("Data is updated regularly but may have reporting delays of 1-2 months.", size="sm")
-                    ], title="Data Freshness", color="orange", variant="light")
+                        dmc.Text("Data path configured in config.py - verify BASE_DATA points to valid Parquet file.", size="sm")
+                    ], title="Data Configuration", color="orange", variant="light")
                 ], gap="md")
             ]
         ),
@@ -97,30 +99,31 @@ def help_section():
                         active=0,
                         children=[
                             dmc.StepperStep(
-                                label="Select Drug Class",
-                                description="Choose a drug classification from the dropdown"
+                                label="Select Filters",
+                                description="Choose drug, brand/generic type, utilization type, and date"
                             ),
                             dmc.StepperStep(
-                                label="Filter Products", 
-                                description="Select specific products within that class (optional)"
+                                label="Choose Metric", 
+                                description="Select payment_per_unit or markup_per_unit for heat map coloring"
                             ),
                             dmc.StepperStep(
-                                label="Choose Package Size",
-                                description="Filter by package size if needed (optional)"
+                                label="Analyze Heat Map",
+                                description="View state-by-state pricing patterns with color intensity"
                             ),
                             dmc.StepperStep(
-                                label="Analyze Chart",
-                                description="View price trends and use the legend for reference"
+                                label="Explore Time Series",
+                                description="Select a state to view price trends over time in the line chart"
                             )
                         ]
                     ),
                     dmc.Divider(),
-                    dmc.Title("Chart Features", order=4, size="md"),
+                    dmc.Title("Interactive Features", order=4, size="md"),
                     dmc.List([
-                        dmc.ListItem("Hover over data points for detailed information"),
-                        dmc.ListItem("Use the legend to identify different products"),
-                        dmc.ListItem("Zoom and pan functionality for detailed analysis"),
-                        dmc.ListItem("Time series shows price evolution over months/years")
+                        dmc.ListItem("Hover over states for detailed pricing information"),
+                        dmc.ListItem("Use colorbar to interpret relative pricing across states"),
+                        dmc.ListItem("Switch between percentile and absolute color scaling"),
+                        dmc.ListItem("Line chart shows payment vs NADAC trends over time"),
+                        dmc.ListItem("Top/bottom state annotations show extreme values")
                     ], size="sm")
                 ], gap="md")
             ]
@@ -135,21 +138,23 @@ def help_section():
                     dmc.Title("Technology Stack", order=4, size="md"),
                     dmc.List([
                         dmc.ListItem("Built with Python Dash and Dash Mantine Components"),
-                        dmc.ListItem("Data processing powered by Polars for high performance"),
-                        dmc.ListItem("Interactive charts created with Plotly"),
-                        dmc.ListItem("Responsive design for desktop and mobile devices")
+                        dmc.ListItem("Data processing powered by Polars for lazy evaluation and streaming"),
+                        dmc.ListItem("Interactive choropleth maps and line charts with Plotly"),
+                        dmc.ListItem("Marimo-based UI alternative available (app_beta.py)"),
+                        dmc.ListItem("Responsive design with professional styling")
                     ], size="sm"),
                     dmc.Divider(),
-                    dmc.Title("Performance Notes", order=4, size="md"),
+                    dmc.Title("Performance Features", order=4, size="md"),
                     dmc.List([
-                        dmc.ListItem("Data is lazily loaded and processed for efficiency"),
-                        dmc.ListItem("Charts update dynamically based on filter selections"),
-                        dmc.ListItem("Optimized for large datasets with streaming operations"),
-                        dmc.ListItem("Caching mechanisms reduce load times")
+                        dmc.ListItem("Lazy frame processing keeps large datasets in memory efficiently"),
+                        dmc.ListItem("Streaming collection for memory-optimized aggregations"),
+                        dmc.ListItem("Percentile-based color scaling reduces outlier impact"),
+                        dmc.ListItem("USD currency formatting throughout visualizations"),
+                        dmc.ListItem("State-level aggregations cached for quick filtering")
                     ], size="sm"),
                     dmc.Alert([
-                        dmc.Text("For technical support or feature requests, please contact the development team.", size="sm")
-                    ], title="Support", color="green", variant="light")
+                        dmc.Text("Heat map uses Viridis colorscale for accessibility. Configure BASE_DATA in config.py before running.", size="sm")
+                    ], title="Configuration", color="green", variant="light")
                 ], gap="md")
             ]
         )
