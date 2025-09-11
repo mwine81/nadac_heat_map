@@ -1,0 +1,7 @@
+polars
+plotly
+pandas
+pyarrow
+dash
+dash-mantine-components
+dash-iconify

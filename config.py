@@ -1,0 +1,47 @@
+from pathlib import Path
+from typing import Any
+
+PRIMARY_COLOR = '#1a365d'
+SECONDARY_COLOR = '#2c5282'      
+ACCENT_COLOR = '#ed8936'         
+ACCENT_DARK = '#dd7324'          
+BACKGROUND_PRIMARY = '#f8fafc'   
+BACKGROUND_SECONDARY = '#ffffff'  
+BACKGROUND_CARD = '#ffffff'      
+TEXT_PRIMARY = '#1a202c'         
+TEXT_SECONDARY = '#4a5568'       
+TEXT_MUTED = '#718096'           
+BORDER_COLOR = '#e2e8f0'
+
+BASE_DATA = Path(r"C:\Users\mwine\3 Axis Advisors Dropbox\Matthew matt@3axisadvisors.com\datalake\viz_data\nadac_heat_map\heat_map.parquet")
+
+HEADER_TITLE = "NADAC Heat Map Dashboard"
+
+THEME: Any = {
+    # Custom brand scale (light -> dark) anchored on our PRIMARY_COLOR (#1a365d)
+    "colors": {
+        "brand": [
+            "#e9eff7",
+            "#d7e3f0",
+            "#c3d6ea",
+            "#a9c4df",
+            "#8bb0d3",
+            "#6b96c3",
+            "#4f80b5",
+            "#3c6da7",
+            "#2b5b93",
+            "#1a365d",
+        ]
+    },
+    "primaryColor": "brand",
+    "fontFamily": "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    "headings": {
+        "fontFamily": "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        "sizes": {
+            "h1": {"fontSize": "28px", "fontWeight": 700},
+            "h2": {"fontSize": "22px", "fontWeight": 700},
+            "h3": {"fontSize": "18px", "fontWeight": 700},
+        },
+    },
+    "defaultRadius": "md",
+}
