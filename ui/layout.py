@@ -5,12 +5,12 @@ from ui.header import header
 from ui.controls import controls
 from ui.chart import chart
 from ui.footer import footer
-
+from ui.help import help_section
 
 layout = dmc.Container(
     [
     header(HEADER_TITLE, [badge_nadac(), badge_sdud()]),
-    # help_section(),
+    help_section(),
     controls(),
     chart(title = 'US - States' ,id = 'map'),
     chart(title= "NADAC to Pay Per Unit", id='line-chart'),

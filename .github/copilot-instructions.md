@@ -1,5 +1,53 @@
 ## Quick orientation for AI coding agents
 
+Goal: get productive fast — this repo is a compact visualization app that scans a Parquet source with Polars, filters lazily, and renders Plotly charts inside a Marimo UI.
+
+Key files
+- `config.py` — `BASE_DATA` (absolute Path to Parquet). Verify this path before running data flows.
+- `scratch.py` — data layer: returns `pl.LazyFrame`, exposes filter helpers (e.g., `filter_map_data`, `filter_line_data`) and `pl.Expr` helpers (e.g., `payment_per_unit()`). Keep transformations lazy when possible.
+- `app_beta.py` — Marimo UI driver. Widgets feed parameters into `scratch` helpers; results are `.collect()`ed and passed to `figures.py`.
+- `figures.py` — Plotly chart builders. Functions expect pandas-like frames (caller usually converts Polars -> pandas). Recent edits expose `range_mode` for choropleth scaling.
+
+Conventions & gotchas (concrete)
+- Lazy-first: helpers return `pl.LazyFrame`. Avoid `.collect()` inside `scratch.py` unless necessary.
+- Literal filters are sensitive: `brand_generic` uses `'Brand'`/`'Generic'`; `utilization_type` uses `'ffsu'`/`'mcou'` predicates — preserve case.
+- Prefer streaming-compatible transforms when callers use `collect(engine='streaming')`.
+- Plotly rendering expects pandas DataFrames; `figures.py` often calls `.to_pandas()`.
+
+How to run locally (validated)
+1. Activate venv:
+```bash
+source .venv/Scripts/activate
+```
+2. Install deps:
+```bash
+pip install -r requirements.txt
+```
+3. Run the UI:
+```bash
+python app_beta.py
+```
+
+Integration & external deps
+- Data: the Parquet at `BASE_DATA`. For CI/dev, provide a small local fixture and prefer an env override.
+- UI: `marimo`. Charts: `plotly` (Express + Graph Objects). Data libraries: `polars`, `pandas`, `pyarrow`.
+
+Safe edit patterns (examples)
+- Add a metric: implement a `pl.Expr` in `scratch.py`, add it into `.with_columns()`/`.agg()`, and reference the metric name in `figures.py`.
+- Choropleth scaling: `figures.create_heat_map(..., range_mode='percentile'|'absolute', percentile_bounds=(low,high))`.
+- Enrich hover: include extra columns (`units`, `rx`) in the DataFrame passed to `create_heat_map` to show in tooltips.
+
+Quick checks before editing
+- Confirm whether a helper returns `pl.LazyFrame` or a collected DataFrame. Mismatches cause runtime errors.
+- Search for sensitive string literals (`'Brand'`, `'Generic'`, `'ffsu'`) and preserve exact values.
+
+Suggested follow-ups I can implement
+- Add a tiny mocked Parquet fixture + pytest for `scratch.filter_map_data` and `figures.create_heat_map`.
+- Surface `range_mode` in the Marimo UI so users can toggle percentile vs absolute scaling.
+
+If anything here is unclear or you want an example implemented (mock data, tests, or UI wiring), tell me which and I'll iterate.
+## Quick orientation for AI coding agents
+
 Goal: help an agent be productive in this repo by describing the architecture, data flows, developer commands, and code conventions that are discoverable from the code.
 
 1) Big-picture architecture

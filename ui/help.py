@@ -156,9 +156,4 @@ def help_section():
     ])
 
 
-def help_modals():
-    """Return the modal components for help sections"""
-    return [
-        # These are already included in help_section() above
-        # but could be separated if needed for different layouts
-    ]
+
