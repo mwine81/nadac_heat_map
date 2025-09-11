@@ -13,7 +13,7 @@ TEXT_SECONDARY = '#4a5568'
 TEXT_MUTED = '#718096'           
 BORDER_COLOR = '#e2e8f0'
 
-BASE_DATA = Path(r".\data\heat_map.parquet")
+BASE_DATA = Path(r"data\heat_map.parquet")
 
 HEADER_TITLE = "NADAC Heat Map Dashboard"
 METRICS = ['payment_per_unit','markup_per_unit','markup_percentile','payment_per_unit_percentile']
