@@ -2,7 +2,7 @@ import dash_mantine_components as dmc
 from config import THEME
 from dash import Dash, Input, Output, State
 from ui.layout import layout
-from scratch import filter_map_data, filter_line_data
+from data_processing.data_processing import filter_map_data, filter_line_data
 from figures import create_heat_map, create_line_chart
 
 app = Dash()

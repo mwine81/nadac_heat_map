@@ -81,9 +81,7 @@ def help_section():
                         dmc.ListItem("Time series data grouped by quarter and converted to monthly display"),
                         dmc.ListItem("Lazy evaluation with Polars for performance on large datasets")
                     ], size="sm"),
-                    dmc.Alert([
-                        dmc.Text("Data path configured in config.py - verify BASE_DATA points to valid Parquet file.", size="sm")
-                    ], title="Data Configuration", color="orange", variant="light")
+     
                 ], gap="md")
             ]
         ),
@@ -152,9 +150,7 @@ def help_section():
                         dmc.ListItem("USD currency formatting throughout visualizations"),
                         dmc.ListItem("State-level aggregations cached for quick filtering")
                     ], size="sm"),
-                    dmc.Alert([
-                        dmc.Text("Heat map uses Viridis colorscale for accessibility. Configure BASE_DATA in config.py before running.", size="sm")
-                    ], title="Configuration", color="green", variant="light")
+   
                 ], gap="md")
             ]
         )

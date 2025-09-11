@@ -1,7 +1,8 @@
 import dash_mantine_components as dmc
 from components.section_container import section_container
-from config import PRIMARY_COLOR
-from scratch import year_quarter_list, state_list, drug_list
+from config import PRIMARY_COLOR, METRIC_DROPDOWN_LABELS
+# from scratch import state_list, drug_list
+from data_processing.data_processing import year_quarter_list, state_list, drug_list
 
 def controls():
     return section_container(
@@ -56,8 +57,8 @@ def controls():
                     children=[
                         dmc.Select(
                             label="Metric Type",
-                            data=['payment_per_unit','markup_per_unit','markup_percentile','payment_per_unit_percentile'],
-                            value='payment_per_unit',
+                            data=METRIC_DROPDOWN_LABELS,
+                            value=METRIC_DROPDOWN_LABELS[0],
                             searchable=True,
                             radius="md",
                             placeholder="Select a Metric...",
