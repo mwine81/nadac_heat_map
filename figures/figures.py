@@ -9,7 +9,7 @@ def _friendly_label(metric: str) -> str:
     return metric.replace('_', ' ').title()
 
 
-def create_heat_map(data: pl.LazyFrame, metric: str) -> go.Figure:
+def create_heat_map(data: pl.LazyFrame, metric: str, color_friendly: bool = False) -> go.Figure:
     """
     Create a professional-looking US choropleth.
 
@@ -39,13 +39,15 @@ def create_heat_map(data: pl.LazyFrame, metric: str) -> go.Figure:
             elif col in ['markup_percentile', 'payment_per_unit_percentile']:
                 hover_data[col] = ':.1%'  # Percentage formatting
     
+
+
     fig = px.choropleth(
         df,
         locations='state',
         locationmode='USA-states',
         color=metric,
         scope='usa',
-        color_continuous_scale=px.colors.sequential.Cividis,  # colorblind-friendly
+        color_continuous_scale=px.colors.sequential.Cividis if color_friendly else px.colors.sequential.Viridis,
         labels={metric: label},
         hover_data=hover_data,
     )
@@ -205,9 +207,6 @@ def create_line_chart(data, selected_year_quarter: str | None = None) -> go.Figu
     fig.update_layout(
         template='plotly_white',
         margin=dict(l=50, r=20, t=70, b=50),
-        # title_text='Drug Pricing Trends Over Time',
-        # title_x=0.5,
-        # title_font_size=16,
         hovermode='x unified',
         legend=dict(
             orientation='h', 

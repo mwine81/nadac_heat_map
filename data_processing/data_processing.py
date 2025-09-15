@@ -3,6 +3,7 @@ from polars import col as c
 import polars.selectors as cs
 from data_processing.expressions import payment_per_unit, weighted_nadac_per_unit, markup_per_unit, markup_percentile, make_date, payment_per_unit_percentile, year_quarter
 from config import BASE_DATA
+from assets.states import STATE_ABBREV
 
 
 def year_quarters() -> pl.LazyFrame:
@@ -34,6 +35,7 @@ def state_list() -> list[str]:
         load_base_data()
         .select(c.state)
         .unique()
+        .with_columns(c.state.replace(STATE_ABBREV))
         .sort('state')
         .collect(engine='streaming')['state']
         .to_list()

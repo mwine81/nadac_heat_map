@@ -4,6 +4,7 @@ from dash import Dash, Input, Output, State
 from ui.layout import layout
 from data_processing.data_processing import filter_map_data, filter_line_data
 from figures.figures import create_heat_map, create_line_chart
+from assets.states import STATE_ABBREV
 
 app = Dash()
 
@@ -17,8 +18,9 @@ app.layout = dmc.MantineProvider(theme=THEME, children=layout)
     Input('utilization-select', 'value'),
     Input('metric-select', 'value'),
     Input('drug-select', 'value'),
+    Input('color-blind-switch', 'checked')
 )
-def update_map(bg_value, date_value, utilization_value, metric_value, drug_value):
+def update_map(bg_value, date_value, utilization_value, metric_value, drug_value, color_blind_mode):
     # Update the chart based on the selected filters
     filtered_data = filter_map_data(
         year_quarter=date_value,
@@ -26,12 +28,13 @@ def update_map(bg_value, date_value, utilization_value, metric_value, drug_value
         utilization_type=utilization_value,
         brand_generic=bg_value
     )
-    fig = create_heat_map(filtered_data, metric_value)
+    fig = create_heat_map(filtered_data, metric_value, color_blind_mode)
     return fig
 
 
 @app.callback(
     Output('line-chart', 'figure'),
+    Output('line-chart-title', 'children'),
     Input('bg-select', 'value'),
     Input('state-select', 'value'),
     Input('utilization-select', 'value'),
@@ -39,6 +42,10 @@ def update_map(bg_value, date_value, utilization_value, metric_value, drug_value
     Input('date-select', 'value'),
 )
 def update_line_chart(bg_value, state_value, utilization_value, drug_value, date_value):
+    # get state abbreviation from full state name if state_value is not None
+    if state_value is not None:
+        state_value = [abbr for abbr, name in STATE_ABBREV.items() if name == state_value][0]
+
     filtered_data = filter_line_data(
         state=state_value,
         drug=drug_value,
@@ -46,7 +53,8 @@ def update_line_chart(bg_value, state_value, utilization_value, drug_value, date
         utilization_type=utilization_value
     )
     fig = create_line_chart(filtered_data, selected_year_quarter=date_value)
-    return fig
+    title = f"NADAC vs SDUD — Unit Price and Payment per Unit (Time Series) for {STATE_ABBREV.get(state_value, state_value)}" if state_value else "NADAC vs SDUD — Unit Price and Payment per Unit (Time Series)"
+    return fig, title
 
 # Help modal callbacks
 @app.callback(
