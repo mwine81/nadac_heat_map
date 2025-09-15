@@ -8,6 +8,7 @@ from assets.states import STATE_ABBREV
 
 app = Dash()
 
+app.title = "US Medicaid Drug Pricing Heat Map"
 
 app.layout = dmc.MantineProvider(theme=THEME, children=layout)
 
