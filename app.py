@@ -13,6 +13,7 @@ app.layout = dmc.MantineProvider(theme=THEME, children=layout)
 
 @app.callback(
     Output('map', 'figure'),
+    Output('map-title', 'children'),
     Input('bg-select', 'value'),
     Input('date-select', 'value'),
     Input('utilization-select', 'value'),
@@ -29,7 +30,8 @@ def update_map(bg_value, date_value, utilization_value, metric_value, drug_value
         brand_generic=bg_value
     )
     fig = create_heat_map(filtered_data, metric_value, color_blind_mode)
-    return fig
+    title = f"U.S. State Heat Map — {metric_value} vs NADAC for {date_value}"
+    return fig, title
 
 
 @app.callback(

@@ -12,7 +12,7 @@ layout = dmc.Container(
         header(HEADER_TITLE, [badge_nadac(), badge_sdud()]),
         help_section(),
         map_controls(),
-        chart(title="U.S. State Heat Map — Payment per Unit vs NADAC", id="map", chart_title_id="map-title"),
+        chart(title="", id="map", chart_title_id="map-title"),
         line_chart_controls(),
         chart(title='', id="line-chart", chart_title_id="line-chart-title"),
         footer(HEADER_TITLE, [badge_nadac(), badge_sdud(), badge_analytics()]),
