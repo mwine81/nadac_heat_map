@@ -24,3 +24,13 @@ def badge_sdud():
         color="teal",
         size="xs"
     )
+
+def last_updated_badge(date: str):
+    return dmc.Badge(
+        f"Last Updated: {date}",
+        variant="light",
+        color="gray",
+        size="xs",
+        radius="sm",
+        style={"fontWeight": 400}
+    )

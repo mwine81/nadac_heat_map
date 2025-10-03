@@ -1,7 +1,7 @@
 import dash_mantine_components as dmc
 from config import PRIMARY_COLOR, TEXT_MUTED
 from components.section_container import section_container
-from components.badges import badge_nadac
+from components.badges import badge_nadac, last_updated_badge
 from components.social_media import social_media_icons
 from config import HEADER_TITLE, UPDATE_DATE
 
@@ -20,14 +20,7 @@ def header(title: str, badges: list):
                         align="center",
                         children=[
                             dmc.Title(HEADER_TITLE, order=3, style={"color": PRIMARY_COLOR}),
-                            dmc.Badge(
-                                f"Last Updated: {UPDATE_DATE}",
-                                variant="light",
-                                color="gray",
-                                size="sm",
-                                radius="sm",
-                                style={"fontWeight": 400}
-                            ),
+                            last_updated_badge(UPDATE_DATE),
                         ]
                     ),
                     dmc.Text(f"by 46brooklyn Research", size="sm", style={"color": TEXT_MUTED}),
