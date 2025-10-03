@@ -3,7 +3,7 @@ from config import PRIMARY_COLOR, TEXT_MUTED
 from components.section_container import section_container
 from components.badges import badge_nadac
 from components.social_media import social_media_icons
-from config import HEADER_TITLE
+from config import HEADER_TITLE, UPDATE_DATE
 
 def header(title: str, badges: list):
     """App header with branding on the left and quick actions on the right."""
@@ -15,8 +15,22 @@ def header(title: str, badges: list):
             dmc.Stack(
                 gap=0,
                 children=[
-                    dmc.Title(HEADER_TITLE, order=3, style={"color": PRIMARY_COLOR}),
-                    dmc.Text("by 46brooklyn Research", size="sm", style={"color": TEXT_MUTED}),
+                    dmc.Group(
+                        gap="xs",
+                        align="center",
+                        children=[
+                            dmc.Title(HEADER_TITLE, order=3, style={"color": PRIMARY_COLOR}),
+                            dmc.Badge(
+                                f"Last Updated: {UPDATE_DATE}",
+                                variant="light",
+                                color="gray",
+                                size="sm",
+                                radius="sm",
+                                style={"fontWeight": 400}
+                            ),
+                        ]
+                    ),
+                    dmc.Text(f"by 46brooklyn Research", size="sm", style={"color": TEXT_MUTED}),
                 ],
             ),
         ],

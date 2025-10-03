@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Any
 
+UPDATE_DATE = "October 2025"
+
 PRIMARY_COLOR = '#1a365d'
 SECONDARY_COLOR = '#2c5282'      
 ACCENT_COLOR = '#ed8936'         
