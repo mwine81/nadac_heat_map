@@ -5,3 +5,6 @@ scratch.py
 .posit/publish/deployments/deployment-BEP2.toml
 data_processing/__pycache__/data_processing.cpython-313.pyc
 .gitignore
+.posit/publish/nadac_heat_map-81D2.toml
+data_processing/__pycache__/data_processing.cpython-313.pyc
+*.pyc

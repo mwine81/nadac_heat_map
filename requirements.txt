@@ -1,7 +1,7 @@
 polars == 1.27.0
-plotly == 6.1.2
-pandas == 2.3.0
+plotly
+pandas
 pyarrow
-dash == 3.2.0
-dash-mantine-components == 2.1.0
-dash-iconify == 0.1.2
+dash
+dash-mantine-components
+dash-iconify

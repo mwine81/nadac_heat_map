@@ -1,6 +1,5 @@
 import polars as pl
 from polars import col as c
-import polars.selectors as cs
 from data_processing.expressions import payment_per_unit, weighted_nadac_per_unit, markup_per_unit, markup_percentile, make_date, payment_per_unit_percentile, year_quarter
 from config import BASE_DATA
 from assets.states import STATE_ABBREV
@@ -88,7 +87,12 @@ def filter_map_data(year_quarter: str,drug: str | None, brand_generic: str | Non
     data = (
         data
         .group_by(c.state)
-        .agg(cs.matches('(?i)rx|total|units').sum().round(4))
+        .agg([
+            c.rx_ct.sum().round(4),
+            c.total_amt.sum().round(4), 
+            c.units.sum().round(4),
+            c.weighted_nadac_total.sum().round(4)
+        ])
         .with_columns(
             payment_per_unit(),
             markup_per_unit(),
@@ -117,7 +121,12 @@ def filter_line_data(state: str,drug: str | None, brand_generic: str | None, uti
     data = (
         data
         .group_by(make_date())
-        .agg(cs.matches('(?i)rx|total|units').sum().round(4))
+        .agg([
+            c.rx_ct.sum().round(4),
+            c.total_amt.sum().round(4),
+            c.units.sum().round(4), 
+            c.weighted_nadac_total.sum().round(4)
+        ])
         .with_columns(
             payment_per_unit(),
             weighted_nadac_per_unit(),

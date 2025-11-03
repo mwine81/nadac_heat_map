@@ -1,6 +1,5 @@
 import polars as pl
 from polars import col as c
-import polars.selectors as cs
 
 def year_quarter() -> pl.Expr:
     """Return a year/quarter expression."""
@@ -8,11 +7,11 @@ def year_quarter() -> pl.Expr:
 
 def payment_per_unit() -> pl.Expr:
     """Return a payment per unit expression."""
-    return (cs.matches('(?i)total_amt') / c.units).round(4).alias('payment_per_unit')
+    return (c.total_amt / c.units).round(4).alias('payment_per_unit')
 
 def weighted_nadac_per_unit() -> pl.Expr:
     """Return a weighted nadac per unit expression."""
-    return (cs.matches('(?i)nadac.*total') / c.units).round(4).alias('weighted_nadac_per_unit')
+    return (c.weighted_nadac_total / c.units).round(4).alias('weighted_nadac_per_unit')
 
 def markup_per_unit() -> pl.Expr:
     """Return a markup per unit expression."""
