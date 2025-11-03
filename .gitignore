@@ -1,2 +1,7 @@
 app_beta.py
 scratch.py
+.toml
+.gitignore
+.posit/publish/deployments/deployment-BEP2.toml
+data_processing/__pycache__/data_processing.cpython-313.pyc
+.gitignore

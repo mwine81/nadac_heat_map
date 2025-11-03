@@ -25,7 +25,8 @@ def year_quarter_list() -> list[str]:
     return (
         year_quarters()
         .select('year_quarter')
-        .collect(engine='streaming')['year_quarter']
+        .collect(engine='streaming')
+        .to_series()
         .to_list()
     )
 
